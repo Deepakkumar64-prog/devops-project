@@ -5,22 +5,25 @@ pipeline {
         ACCOUNT_ID = '666398468379'
         REGION = 'us-east-1'
         REPO = 'devops-project'
+        AWS_PAGER = ''
     }
 
     stages {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t devops-project .'
+                sh '''
+                docker build -t ${REPO} .
+                '''
             }
         }
 
         stage('Login to ECR') {
             steps {
                 sh '''
-                aws ecr get-login-password --region $REGION | \
+                aws ecr get-login-password --region ${REGION} | \
                 docker login --username AWS --password-stdin \
-                $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
+                ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
                 '''
             }
         }
@@ -28,8 +31,8 @@ pipeline {
         stage('Tag Docker Image') {
             steps {
                 sh '''
-                docker tag devops-project:latest \
-                $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/devops-project:latest
+                docker tag ${REPO}:latest \
+                ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${REPO}:latest
                 '''
             }
         }
@@ -38,7 +41,7 @@ pipeline {
             steps {
                 sh '''
                 docker push \
-                $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/devops-project:latest
+                ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${REPO}:latest
                 '''
             }
         }
