@@ -35,3 +35,12 @@ jobs:
       - name: Push Image to ECR
         run: |
           docker push 666398468379.dkr.ecr.us-east-1.amazonaws.com/devops-project:latest
+                - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~
+            ./deploy.sh
