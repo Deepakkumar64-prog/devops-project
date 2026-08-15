@@ -45,5 +45,16 @@ pipeline {
                 '''
             }
         }
+
+        stage('Deploy to EC2') {
+            steps {
+                sshagent(['ec2-ssh-key']) {
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no root@107.21.85.47 \
+                    "cd ~ && ./deploy.sh"
+                    '''
+                }
+            }
+        }
     }
 }
